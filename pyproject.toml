@@ -1,0 +1,13 @@
+[project]
+name = "library-management-system"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "dotenv>=0.9.9",
+    "install",
+    "pip",
+    "psycopg2>=2.9.10",
+    "psycopg2-binary",
+]
