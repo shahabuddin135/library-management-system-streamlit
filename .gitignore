@@ -10,7 +10,8 @@ wheels/
 # Virtual environments
 .venv
 .env*
-env
+.env
+.env.local
 util.py
 
 .streamlit
