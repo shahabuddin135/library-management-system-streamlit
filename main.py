@@ -3,10 +3,10 @@ import psycopg2
 import os
 from dotenv import load_dotenv
 import pandas as pd
-from util import db_connect
+
 
 # Load environment variables (for local development)
-# db_connect()
+
 load_dotenv()
 
 
@@ -15,7 +15,7 @@ def get_connection():
     """
     Connect to Neon using credentials from Streamlit secrets or .env.
     """
-    conn_str = st.secrets["neon"]["url"] if "neon" in st.secrets else os.getenv("NEON_DATABASE_URL")
+    conn_str = st.secrets["NEON_DATABASE_URL"]["url"] if "neon" in st.secrets else os.getenv("NEON_DATABASE_URL")
     try:
         return psycopg2.connect(conn_str)
     except Exception as e:
