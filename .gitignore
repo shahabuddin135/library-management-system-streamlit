@@ -11,3 +11,7 @@ wheels/
 .venv
 .env*
 env
+util.py
+
+.streamlit
+secret.toml

@@ -6,8 +6,9 @@ import pandas as pd
 from util import db_connect
 
 # Load environment variables (for local development)
-db_connect()
+# db_connect()
 load_dotenv()
+
 
 
 def get_connection():
@@ -28,7 +29,7 @@ def create_table():
         try:
             cur = conn.cursor()
             cur.execute("""
-                CREATE TABLE IF NOT EXISTS books (
+                CREATE TABLE IF NOT EXISTS bookshelf (
                     id SERIAL PRIMARY KEY,
                     title VARCHAR(255) NOT NULL,
                     author VARCHAR(255) NOT NULL,
@@ -43,6 +44,7 @@ def create_table():
             cur.close()
             conn.close()
 
+# In the add_book function:
 def add_book(title, author, year, available, read_status, genre):
     """Insert a new book record."""
     conn = get_connection()
@@ -50,8 +52,8 @@ def add_book(title, author, year, available, read_status, genre):
         try:
             cur = conn.cursor()
             cur.execute(
-                "INSERT INTO books (title, author, year, available, read_status, genre) VALUES (%s, %s, %s, %s, %s, %s)",
-                (title, author, year, available, read_status, genre)
+                "INSERT INTO bookshelf (title, author, read_status, available, year, genre) VALUES (%s, %s, %s, %s, %s, %s)",
+                (title, author, read_status, available, year, genre)  # Corrected parameter order
             )
             conn.commit()
         finally:
@@ -64,7 +66,7 @@ def get_books():
     if conn:
         try:
             cur = conn.cursor()
-            cur.execute("SELECT * FROM books ORDER BY id")
+            cur.execute("SELECT * FROM bookshelf ORDER BY id")
             rows = cur.fetchall()
             return rows
         finally:
@@ -72,7 +74,7 @@ def get_books():
             conn.close()
     return []
 
-def update_book(book_id, title, author, year, read_status, available, genre):
+def update_book(book_id, title, author, year, read_status,available, genre):
     """Update an existing book record."""
     conn = get_connection()
     if conn:
@@ -80,11 +82,11 @@ def update_book(book_id, title, author, year, read_status, available, genre):
             cur = conn.cursor()
             cur.execute(
                 """
-                UPDATE books 
+                UPDATE bookshelf 
                 SET title=%s, author=%s, year=%s, read_status=%s, available=%s, genre=%s 
                 WHERE id=%s
                 """,
-                (title, author, year, read_status, available, genre, book_id)
+                (title, author, year, read_status,available, genre, book_id)
             )
             conn.commit()
         finally:
@@ -97,7 +99,7 @@ def delete_book(book_id):
     if conn:
         try:
             cur = conn.cursor()
-            cur.execute("DELETE FROM books WHERE id=%s", (book_id,))
+            cur.execute("DELETE FROM bookshelf WHERE id=%s", (book_id,))
             conn.commit()
         finally:
             cur.close()
@@ -112,18 +114,20 @@ menu = ["Add Book", "View Books", "Update Book", "Delete Book"]
 choice = st.sidebar.selectbox("Menu", menu)
 
 if choice == "Add Book":
+    
     st.header("Add a New Book")
     with st.form("add_book_form"):
         title = st.text_input("Title")
         author = st.text_input("Author")
-        year = st.number_input("Year", min_value=1000, max_value=2100, step=1)
+        year = st.number_input("Year", max_value=2100, step=1)
         read_status = st.checkbox("Read?", value=False)
         available = st.checkbox("Available", value=True)
         genre = st.text_input("Genre")
         submitted = st.form_submit_button("Add Book")
         if submitted and title and author:
-            add_book(title, author, year, available, read_status, genre)
+            add_book(title, author, year, available, read_status, genre)  # Corrected parameter order
             st.success(f"Book '{title}' added successfully!")
+
         elif submitted:
             st.error("Title and Author are required.")
 
@@ -164,7 +168,7 @@ elif choice == "Update Book":
             genre = st.text_input("Genre", value=book[6] if book[6] else "")
             submitted = st.form_submit_button("Update Book")
             if submitted:
-                update_book(book_id, title, author, year, read_status, available, genre)
+                update_book(book_id, title, author, year, read_status,available, genre)
                 st.success(f"Book ID {book_id} updated successfully!")
 
 elif choice == "Delete Book":
