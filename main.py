@@ -14,13 +14,13 @@ def main():
     enforce_access_control() # securely logs The db errors 
     print("Welcome to the Library Management System!")
 
-# main()
+main()
 
 def get_connection():
     """
     Connect to Neon using credentials from Streamlit secrets or .env.
     """
-    conn_str = st.secrets["NEON_DATABASE_URL"]["url"] if "neon" in st.secrets else os.getenv("NEON_DATABASE_URL")
+    conn_str = st.secrets["neon"]["url"] if "neon" in st.secrets else os.getenv("NEON_DATABASE_URL")
     try:
         return psycopg2.connect(conn_str)
     except Exception as e:
