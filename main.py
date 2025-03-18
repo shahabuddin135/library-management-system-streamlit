@@ -1,3 +1,5 @@
+import re
+from urllib.parse import parse_qs, urlencode, urlparse
 import streamlit as st
 import psycopg2
 import os
@@ -19,10 +21,44 @@ def main():
 def get_connection():
     """
     Connect to Neon using credentials from Streamlit secrets or .env.
+    Automatically adds endpoint ID parameter for compatibility.
     """
     conn_str = st.secrets["neon"]["url"] if "neon" in st.secrets else os.getenv("NEON_DATABASE_URL")
+    if not conn_str:
+        st.error("Database connection string not found.")
+        return None
+
+    # Parse connection URL to extract endpoint ID
+    parsed_url = urlparse(conn_str)
+    hostname = parsed_url.hostname
+    if not hostname:
+        st.error("Invalid database connection URL.")
+        return None
+
+    endpoint_id = hostname.split('.')[0]
+
+    # Update query parameters with endpoint ID
+    query_params = parse_qs(parsed_url.query)
+    new_option = f'endpoint={endpoint_id}'
+
+    if 'options' in query_params:
+        # Update existing options parameter
+        existing_options = query_params['options'][0]
+        if 'endpoint=' in existing_options:
+            existing_options = re.sub(r'endpoint=[^&]*', new_option, existing_options)
+        else:
+            existing_options += f' {new_option}'
+        query_params['options'] = [existing_options]
+    else:
+        query_params['options'] = [new_option]
+
+    # Rebuild the connection URL
+    new_query = urlencode(query_params, doseq=True)
+    modified_url = parsed_url._replace(query=new_query)
+    modified_conn_str = modified_url.geturl()
+
     try:
-        return psycopg2.connect(conn_str)
+        return psycopg2.connect(modified_conn_str)
     except Exception as e:
         st.error(f"Error connecting to database: {e}")
         return None
