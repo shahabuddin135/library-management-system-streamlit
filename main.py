@@ -3,7 +3,7 @@ import psycopg2
 import os
 from dotenv import load_dotenv
 import pandas as pd
-from dependencies import enforce_access_control
+from dependencies.dependencies import enforce_access_control
 
 # Load environment variables (for local development)
 
@@ -11,10 +11,10 @@ load_dotenv()
 
 
 def main():
-    enforce_access_control()
+    enforce_access_control() # securely logs The db errors 
     print("Welcome to the Library Management System!")
 
-main()
+# main()
 
 def get_connection():
     """
