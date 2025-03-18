@@ -14,7 +14,7 @@ def main():
     enforce_access_control() # securely logs The db errors 
     print("Welcome to the Library Management System!")
 
-main()
+# main()
 
 def get_connection():
     """
