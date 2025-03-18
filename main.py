@@ -3,7 +3,6 @@ import psycopg2
 import os
 from dotenv import load_dotenv
 import pandas as pd
-from dependencies import _
 from dependencies import enforce_access_control
 
 # Load environment variables (for local development)
