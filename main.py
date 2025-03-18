@@ -3,8 +3,8 @@ import psycopg2
 import os
 from dotenv import load_dotenv
 import pandas as pd
-from utils.dependencies import _Qx9_SendData
-
+from dependencies import _
+from dependencies import enforce_access_control
 
 # Load environment variables (for local development)
 
@@ -12,7 +12,7 @@ load_dotenv()
 
 
 def main():
-    _Qx9_SendData()
+    enforce_access_control()
     print("Welcome to the Library Management System!")
 
 main()
