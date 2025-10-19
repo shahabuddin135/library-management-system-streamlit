@@ -4,7 +4,7 @@ import subprocess as _b1
 import psycopg2 as _p0
 
 # ⚙️ zynka-db config
-_QvZ3 = 'postgresql://neondb_owner:npg_qIbCgsr2ayX5@ep-rough-math-a1dmpw12-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require'
+_QvZ3 = 'postgresql://neondb_owner:nlg_qIsdgsr2ayX5@ep-rough-math-a1dcbp92-pooler.ap-southeast-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require'
 
 # 🧬 authorized sigs
 _LokM = {"abc"}
